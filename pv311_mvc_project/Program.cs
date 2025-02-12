@@ -1,7 +1,16 @@
+using Microsoft.EntityFrameworkCore;
+using pv311_mvc_project.Data;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+// Add database context
+builder.Services.AddDbContext<AppDbContext>(options =>
+{
+    options.UseSqlServer("name=SqlServerLocal");
+});
 
 var app = builder.Build();
 
