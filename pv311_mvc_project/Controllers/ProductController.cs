@@ -1,8 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using pv311_mvc_project.Data;
 using pv311_mvc_project.Models;
+using pv311_mvc_project.Repositories.Products;
+using pv311_mvc_project.Services.Image;
 using pv311_mvc_project.ViewModels;
 
 namespace pv311_mvc_project.Controllers
@@ -11,18 +12,20 @@ namespace pv311_mvc_project.Controllers
     {
         private readonly AppDbContext _context;
         private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly IProductRepository _productRepository;
+        private readonly IImageService _imageService;
 
-        public ProductController(AppDbContext context, IWebHostEnvironment webHostEnvironment)
+        public ProductController(AppDbContext context, IWebHostEnvironment webHostEnvironment, IProductRepository productRepository, IImageService imageService)
         {
             _context = context;
             _webHostEnvironment = webHostEnvironment;
+            _productRepository = productRepository;
+            _imageService = imageService;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> IndexAsync()
         {
-            var products = _context.Products
-                .Include(p => p.Category)
-                .AsEnumerable();
+            var products = await _productRepository.GetAllAsync();
 
             return View(products);
         }
@@ -46,32 +49,31 @@ namespace pv311_mvc_project.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create([FromForm] CreateProductVM viewModel)
+        public async Task<IActionResult> CreateAsync([FromForm] CreateProductVM viewModel)
         {
             string? fileName = null;
 
             if (viewModel.File != null)
             {
-                fileName = SaveImage(viewModel.File);
+                fileName = await _imageService.SaveImageAsync(viewModel.File, Settings.PRODUCTS_PATH);
             }
 
             viewModel.Product.Image = fileName;
             viewModel.Product.Id = Guid.NewGuid().ToString();
 
-            _context.Products.Add(viewModel.Product);
-            _context.SaveChanges();
+            await _productRepository.CreateAsync(viewModel.Product);
 
             return RedirectToAction("Index");
         }
 
-        public IActionResult Delete(string? id)
+        public async Task<IActionResult> DeleteAsync(string? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var product = _context.Products.FirstOrDefault(p => p.Id == id);
+            var product = await _productRepository.FindByIdAsync(id);
 
             if (product == null)
             {
@@ -83,53 +85,16 @@ namespace pv311_mvc_project.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Delete(Product model)
+        public async Task<IActionResult> DeleteAsync(Product model)
         {
             if(model.Image != null)
             {
-                string imagesPath = Path.Combine(_webHostEnvironment.WebRootPath, Settings.PRODUCTS_PATH);
-                string imagePath = Path.Combine(imagesPath, model.Image);
-                if (System.IO.File.Exists(imagePath))
-                {
-                    System.IO.File.Delete(imagePath);
-                }
+                _imageService.DeleteImage(Path.Combine(Settings.PRODUCTS_PATH, model.Image));
             }
 
-            _context.Products.Remove(model);
-            _context.SaveChanges();
+            await _productRepository.DeleteAsync(model.Id);
 
             return RedirectToAction("Index");
-        }
-
-        private string? SaveImage(IFormFile file)
-        {
-            try
-            {
-                var types = file.ContentType.Split("/");
-
-                if (types[0] != "image")
-                {
-                    return null;
-                }
-
-                string imageName = $"{Guid.NewGuid()}.{types[1]}";
-                string imagesPath = Path.Combine(_webHostEnvironment.WebRootPath, Settings.PRODUCTS_PATH);
-                string imagePath = Path.Combine(imagesPath, imageName);
-
-                using (var fileStream = System.IO.File.Create(imagePath))
-                {
-                    using (var stream = file.OpenReadStream())
-                    {
-                        stream.CopyTo(fileStream);
-                    }
-                }
-
-                return imageName;
-            }
-            catch (Exception)
-            {
-                return null;
-            }
         }
     }
 }

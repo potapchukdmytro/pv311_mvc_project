@@ -1,10 +1,18 @@
 using Microsoft.EntityFrameworkCore;
 using pv311_mvc_project.Data;
+using pv311_mvc_project.Data.Initializer;
+using pv311_mvc_project.Repositories.Products;
+using pv311_mvc_project.Services.Image;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddScoped<IImageService, ImageService>();
+
+// Add repositories
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
 
 // Add database context
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -32,5 +40,8 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+// Seeding data
+app.Seed();
 
 app.Run();
