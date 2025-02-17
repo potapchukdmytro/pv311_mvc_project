@@ -1,21 +1,16 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using pv311_mvc_project.Data;
 using pv311_mvc_project.Models;
+using pv311_mvc_project.Validators;
 
 namespace pv311_mvc_project.Controllers
 {
-    public class CategoryController : Controller
+    public class CategoryController(AppDbContext context) 
+        : Controller
     {
-        private readonly AppDbContext _context;
-
-        public CategoryController(AppDbContext context)
-        {
-            _context = context;
-        }
-
         public IActionResult Index()
         {
-            var categories = _context.Categories.AsEnumerable();
+            var categories = context.Categories.AsEnumerable();
             return View(categories);
         }
 
@@ -28,9 +23,17 @@ namespace pv311_mvc_project.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Create(Category model)
         {
+            var validator = new CategoryValidator();
+            var result = validator.Validate(model);
+            
+            if(!result.IsValid)
+            {
+                return BadRequest(result.Errors);
+            }
+
             model.Id = Guid.NewGuid().ToString();
-            _context.Categories.Add(model);
-            _context.SaveChanges();
+            context.Categories.Add(model);
+            context.SaveChanges();
 
             return RedirectToAction("Index");
         }
@@ -42,7 +45,7 @@ namespace pv311_mvc_project.Controllers
                 return NotFound();
             }
 
-            var category = _context.Categories.FirstOrDefault(c => c.Id == id);
+            var category = context.Categories.FirstOrDefault(c => c.Id == id);
 
             if (category == null)
             {
@@ -56,8 +59,8 @@ namespace pv311_mvc_project.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Update(Category model)
         {
-            _context.Categories.Update(model);
-            _context.SaveChanges();
+            context.Categories.Update(model);
+            context.SaveChanges();
             return RedirectToAction("Index");
         }
 
@@ -68,7 +71,7 @@ namespace pv311_mvc_project.Controllers
                 return NotFound();
             }
 
-            var category = _context.Categories.FirstOrDefault(c => c.Id == id);
+            var category = context.Categories.FirstOrDefault(c => c.Id == id);
 
             if (category == null)
             {
@@ -82,8 +85,8 @@ namespace pv311_mvc_project.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Delete(Category model)
         {
-            _context.Categories.Remove(model);
-            _context.SaveChanges();
+            context.Categories.Remove(model);
+            context.SaveChanges();
             return RedirectToAction("Index");
         }
     }
