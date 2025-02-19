@@ -3,11 +3,8 @@
 namespace pv311_mvc_project.Repositories.Products
 {
     public interface IProductRepository
+        : IGenericRepository<Product, string>
     {
-        Task<bool> CreateAsync(Product model);
-        Task<bool> UpdateAsync(Product model);
-        Task<bool> DeleteAsync(string id);
-        Task<List<Product>> GetAllAsync();
-        Task<Product?> FindByIdAsync(string id);
+        IQueryable<Product> Products { get; }
     }
 }

@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using pv311_mvc_project.Data;
 using pv311_mvc_project.Data.Initializer;
+using pv311_mvc_project.Repositories.Categories;
 using pv311_mvc_project.Repositories.Products;
 using pv311_mvc_project.Services.Image;
 
@@ -13,6 +14,7 @@ builder.Services.AddScoped<IImageService, ImageService>();
 
 // Add repositories
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 
 // Add database context
 builder.Services.AddDbContext<AppDbContext>(options =>

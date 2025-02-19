@@ -2,10 +2,8 @@
 
 namespace pv311_mvc_project.Models
 {
-    public class Category
+    public class Category : BaseModel<string>
     {
-        [Key]
-        public string? Id { get; set; }
         [Required, MaxLength(100)]
         public string? Name { get; set; }
 

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using pv311_mvc_project.Data;
 using pv311_mvc_project.Models;
+using pv311_mvc_project.Repositories.Categories;
 using pv311_mvc_project.Repositories.Products;
 using pv311_mvc_project.Services.Image;
 using pv311_mvc_project.ViewModels;
@@ -9,19 +10,19 @@ using pv311_mvc_project.ViewModels;
 namespace pv311_mvc_project.Controllers
 {
     public class ProductController
-        (AppDbContext context, IProductRepository productRepository, IImageService imageService)
+        (ICategoryRepository categoryRepository, IProductRepository productRepository, IImageService imageService)
         : Controller
     {
-        public async Task<IActionResult> IndexAsync()
+        public IActionResult Index()
         {
-            var products = await productRepository.GetAllAsync();
+            var products = productRepository.Products;
 
             return View(products);
         }
 
         public IActionResult Create()
         {
-            var categories = context.Categories.AsEnumerable();
+            var categories = categoryRepository.GetAll();
 
             var viewModel = new CreateProductVM
             {

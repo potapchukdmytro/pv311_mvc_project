@@ -3,13 +3,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace pv311_mvc_project.Models
 {
-    public class Product
+    public class Product : BaseModel<string>
     {
-        [Key]
-        public string? Id { get; set; }
         [Required, MaxLength(100)]
         public string? Name { get; set; }
-        [MaxLength(255)]
+        [MaxLength]
         public string? Description { get; set; }
         [Range(0, double.MaxValue)]
         public decimal Price { get; set; }
