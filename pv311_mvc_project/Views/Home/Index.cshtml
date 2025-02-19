@@ -1,8 +1,39 @@
-﻿@{
+﻿@model IEnumerable<Product>
+
+@{
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container d-flex justify-content-center mt-50 mb-50">
+    <div class="row">
+        @foreach (var product in Model)
+        {
+            <div class="col-md-4 mt-2">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="card-img-actions">
+                            <img src="~/images/products/@(product.Image ?? "productDefault.png")" class="card-img img-fluid" alt="">
+                        </div>
+                    </div>
+                    <div class="card-body bg-light text-center">
+                        <div class="mb-2">
+                            <h6 class="font-weight-semibold mb-2">
+                                <a href="#" class="text-default mb-2" data-abc="true">@product.Name</a>
+                            </h6>
+                            <a href="#" class="text-muted" data-abc="true">@product.Category?.Name</a>
+                        </div>
+                        <h3 class="mb-0 font-weight-semibold">@product.Price₴</h3>
+                        <div>
+                            <i class="fa fa-star star"></i>
+                            <i class="fa fa-star star"></i>
+                            <i class="fa fa-star star"></i>
+                            <i class="fa fa-star star"></i>
+                        </div>
+                        <div class="text-muted mb-3">34 reviews</div>
+                        <a asp-action="Details" asp-route-id="@product.Id" class="btn bg-cart"><i class="fa fa-cart-plus mr-2"></i>Детальніше</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
 </div>

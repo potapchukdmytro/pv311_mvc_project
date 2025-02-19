@@ -1,11 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using pv311_mvc_project.Data;
 using pv311_mvc_project.Models;
-using pv311_mvc_project.Validators;
 
 namespace pv311_mvc_project.Controllers
 {
-    public class CategoryController(AppDbContext context) 
+    public class CategoryController(AppDbContext context)
         : Controller
     {
         public IActionResult Index()
@@ -23,24 +22,21 @@ namespace pv311_mvc_project.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Create(Category model)
         {
-            var validator = new CategoryValidator();
-            var result = validator.Validate(model);
-            
-            if(!result.IsValid)
+            if (ModelState.IsValid)
             {
-                return BadRequest(result.Errors);
+                model.Id = Guid.NewGuid().ToString();
+                context.Categories.Add(model);
+                context.SaveChanges();
+
+                return RedirectToAction("Index");
             }
-
-            model.Id = Guid.NewGuid().ToString();
-            context.Categories.Add(model);
-            context.SaveChanges();
-
-            return RedirectToAction("Index");
+            else
+                return View(model);
         }
 
         public IActionResult Update(string? id)
         {
-            if(id == null)
+            if (id == null)
             {
                 return NotFound();
             }
@@ -59,9 +55,14 @@ namespace pv311_mvc_project.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Update(Category model)
         {
-            context.Categories.Update(model);
-            context.SaveChanges();
-            return RedirectToAction("Index");
+            if (ModelState.IsValid)
+            {
+                context.Categories.Update(model);
+                context.SaveChanges();
+                return RedirectToAction("Index");
+            }
+            else
+                return View(model);
         }
 
         public IActionResult Delete(string? id)
