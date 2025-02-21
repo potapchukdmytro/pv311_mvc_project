@@ -1,7 +1,10 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using pv311_mvc_project.Models;
+using pv311_mvc_project.Repositories.Categories;
 using pv311_mvc_project.Repositories.Products;
+using pv311_mvc_project.ViewModels;
 
 namespace pv311_mvc_project.Controllers
 {
@@ -9,17 +12,38 @@ namespace pv311_mvc_project.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly IProductRepository _productRepository;
+        private readonly ICategoryRepository _categoryRepository;
 
-        public HomeController(ILogger<HomeController> logger, IProductRepository productRepository)
+        public HomeController(ILogger<HomeController> logger, IProductRepository productRepository, ICategoryRepository categoryRepository)
         {
             _logger = logger;
             _productRepository = productRepository;
+            _categoryRepository = categoryRepository;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(string? category = "", int page = 1)
         {
-            var products = _productRepository.Products;
-            return View(products);
+            int pageSize = 12;
+
+            var products = string.IsNullOrEmpty(category)
+                    ? _productRepository.Products
+                    : _productRepository.GetByCategory(category).Include(p => p.Category);
+
+            int pagesCount = (int)Math.Ceiling(products.Count() / (double)pageSize);
+            page = page <= 0 || page > pagesCount ? 1 : page;
+
+            products = products.Skip((page - 1) * pageSize).Take(pageSize);
+
+            var viewModel = new HomeProductsListVM
+            {
+                Products = products,
+                Categories = _categoryRepository.GetAll(),
+                Page = page,
+                PagesCount = pagesCount,
+                Category = category ?? ""
+            };
+
+            return View(viewModel);
         }
 
         [ActionName("Details")]

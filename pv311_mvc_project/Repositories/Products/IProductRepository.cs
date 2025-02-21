@@ -6,5 +6,6 @@ namespace pv311_mvc_project.Repositories.Products
         : IGenericRepository<Product, string>
     {
         IQueryable<Product> Products { get; }
+        IQueryable<Product> GetByCategory(string category);
     }
 }

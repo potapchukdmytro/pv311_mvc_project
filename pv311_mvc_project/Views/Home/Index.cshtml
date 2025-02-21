@@ -1,39 +1,86 @@
-﻿@model IEnumerable<Product>
+﻿@model HomeProductsListVM
 
 @{
     ViewData["Title"] = "Home Page";
 }
 
-<div class="container d-flex justify-content-center mt-50 mb-50">
-    <div class="row">
-        @foreach (var product in Model)
-        {
-            <div class="col-md-4 mt-2">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="card-img-actions">
-                            <img src="~/images/products/@(product.Image ?? "productDefault.png")" class="card-img img-fluid" alt="">
+<section>
+    <div class="container py-5">
+        <div class="mb-2 d-flex justify-content-center">
+            <a href="@Url.Action("Index", new { category = "" })" class="btn btn-success mx-1">Всі товари</a>
+            @foreach (var category in Model.Categories)
+            {
+                <a href="@Url.Action("Index", new { category = category.Name })" class="btn btn-success mx-1">@category.Name</a>
+            }
+        </div>
+        <div class="row">
+            @foreach (var product in Model.Products)
+            {
+                <div class="col-md-12 col-lg-3 mb-4 mb-lg-2 product-home-card">
+                    <div class="card h-100 shadow pt-4">
+                        <a class="text-decoration-none" asp-action="Details" asp-route-id="@product.Id">
+                            <div class="text-center">
+                                <img src="~/images/products/@(product.Image ?? "productDefault.png")"
+                                     width="200px" alt="@product.Name" />
+                            </div>
+                        </a>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-start">
+                                <p class="small">
+                                    <a href="@Url.Action("Index", new { category = @product.Category?.Name })" class="product-category-link">@product.Category?.Name</a>
+                                </p>
+                            </div>
+
+                            <div class="d-flex justify-content-between text-start mb-3 flex-column">
+                                <a class="text-decoration-none" asp-action="Details" asp-route-id="@product.Id">
+                                    <h6 style="color: black;" class="mb-0">@product.Name</h6>
+                                </a>
+                                <h5 class="text-dark mt-2">@product.Price₴</h5>
+                            </div>
+
+                            <div class="d-flex justify-content-between mb-2">
+                                <p class="text-muted mb-0">Available: <span class="fw-bold">@product.Amount</span></p>
+                            </div>
                         </div>
-                    </div>
-                    <div class="card-body bg-light text-center">
-                        <div class="mb-2">
-                            <h6 class="font-weight-semibold mb-2">
-                                <a href="#" class="text-default mb-2" data-abc="true">@product.Name</a>
-                            </h6>
-                            <a href="#" class="text-muted" data-abc="true">@product.Category?.Name</a>
-                        </div>
-                        <h3 class="mb-0 font-weight-semibold">@product.Price₴</h3>
-                        <div>
-                            <i class="fa fa-star star"></i>
-                            <i class="fa fa-star star"></i>
-                            <i class="fa fa-star star"></i>
-                            <i class="fa fa-star star"></i>
-                        </div>
-                        <div class="text-muted mb-3">34 reviews</div>
-                        <a asp-action="Details" asp-route-id="@product.Id" class="btn bg-cart"><i class="fa fa-cart-plus mr-2"></i>Детальніше</a>
                     </div>
                 </div>
-            </div>
-        }
+            }
+        </div>
     </div>
-</div>
+</section>
+<nav aria-label="Page navigation example" class="mx-3">
+    <ul class="pagination">
+        @if (Model.Page > 1)
+        {
+            <li class="page-item">
+                <a class="page-link" href="@Url.Action("Index", new { page = Model.Page - 1, category = Model.Category })" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+        }
+        @if (Model.PagesCount > 1)
+        {
+            @for (int i = 1; i <= Model.PagesCount; i++)
+            {
+                <li class="page-item @(Model.Page == i ? "active" : "")">
+                    @if (Model.Page == i)
+                    {
+                        <span style="cursor: pointer" class="page-link">@i</span>
+                    }
+                    else
+                    {
+                        <a class="page-link" href="@Url.Action("Index", new { page = i, category = Model.Category })">@i</a>
+                    }
+                </li>
+            }
+        }
+        @if (Model.Page < Model.PagesCount)
+        {
+            <li class="page-item">
+                <a class="page-link" href="@Url.Action("Index", new { page = Model.Page + 1, category = Model.Category })" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        }
+    </ul>
+</nav>

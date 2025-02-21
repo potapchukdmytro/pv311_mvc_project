@@ -6,5 +6,6 @@ namespace pv311_mvc_project.Repositories.Categories
         : IGenericRepository<Category, string>
     {
         IQueryable<Category> Categories { get; }
+        Task<Category?> FindByNameAsync(string name);
     }
 }
