@@ -14,32 +14,46 @@
             }
         </div>
         <div class="row">
-            @foreach (var product in Model.Products)
+            @foreach (var item in Model.Products)
             {
-                <div class="col-md-12 col-lg-3 mb-4 mb-lg-2 product-home-card">
+                <div id="@item.Product.Id" class="col-md-12 col-lg-3 mb-4 mb-lg-2 product-home-card">
                     <div class="card h-100 shadow pt-4">
-                        <a class="text-decoration-none" asp-action="Details" asp-route-id="@product.Id">
+                        <a class="text-decoration-none" asp-action="Details" asp-route-id="@item.Product.Id">
                             <div class="text-center">
-                                <img src="~/images/products/@(product.Image ?? "productDefault.png")"
-                                     width="200px" alt="@product.Name" />
+                                <img src="~/images/products/@(item.Product.Image ?? "productDefault.png")"
+                                width="200px" alt="@item.Product.Name" />
                             </div>
                         </a>
                         <div class="card-body">
                             <div class="d-flex justify-content-start">
                                 <p class="small">
-                                    <a href="@Url.Action("Index", new { category = @product.Category?.Name })" class="product-category-link">@product.Category?.Name</a>
+                                    <a href="@Url.Action("Index", new { category = @item.Product.Category?.Name })" class="product-category-link">@item.Product.Category?.Name</a>
                                 </p>
                             </div>
 
                             <div class="d-flex justify-content-between text-start mb-3 flex-column">
-                                <a class="text-decoration-none" asp-action="Details" asp-route-id="@product.Id">
-                                    <h6 style="color: black;" class="mb-0">@product.Name</h6>
+                                <a class="text-decoration-none" asp-action="Details" asp-route-id="@item.Product.Id">
+                                    <h6 style="color: black;" class="mb-0">@item.Product.Name</h6>
                                 </a>
-                                <h5 class="text-dark mt-2">@product.Price₴</h5>
+                                <h5 class="text-dark mt-2">@item.Product.Price₴</h5>
                             </div>
 
                             <div class="d-flex justify-content-between mb-2">
-                                <p class="text-muted mb-0">Available: <span class="fw-bold">@product.Amount</span></p>
+                                <p class="text-muted mb-0">В наявності: <span class="fw-bold">@item.Product.Amount</span></p>
+                            </div>
+                            <div class="text-start">
+                                @if(item.InCart)
+                                {
+                                    <button onclick="removeFromCart('@item.Product.Id')" class="btn btn-danger">
+                                        <i class="bi bi-cart-dash-fill"></i>
+                                    </button>
+                                }
+                                else
+                                {
+                                    <button onclick="addToCart('@item.Product.Id')" class="btn btn-warning">
+                                        <i class="bi bi-cart-plus-fill"></i>
+                                    </button>
+                                }
                             </div>
                         </div>
                     </div>

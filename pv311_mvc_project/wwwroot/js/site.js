@@ -3,7 +3,26 @@
 
 // Write your JavaScript code.
 
+function postRequest(url, data) {
+    fetch(url, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: data
+    })
+        .then(response => {
+            if (response.ok) {
+                window.location.reload();
+            }
+        })
+        .catch(error => console.error(error));
+}
 
-function btnClick() {
-    alert("Button clicked");
+function addToCart(productId) {
+    postRequest("/Cart/AddToCart", JSON.stringify({ productId: productId }));
+}
+
+function removeFromCart(productId) {
+    postRequest("/Cart/RemoveFromCart", JSON.stringify({ productId: productId }));
 }

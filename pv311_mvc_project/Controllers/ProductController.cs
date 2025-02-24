@@ -45,7 +45,7 @@ namespace pv311_mvc_project.Controllers
 
             if (viewModel.File != null)
             {
-                fileName = await imageService.SaveImageAsync(viewModel.File, Settings.PRODUCTS_PATH);
+                fileName = await imageService.SaveImageAsync(viewModel.File, Settings.ProductsImagesPath);
             }
 
             viewModel.Product.Image = fileName;
@@ -79,7 +79,7 @@ namespace pv311_mvc_project.Controllers
         {
             if(model.Image != null)
             {
-                imageService.DeleteImage(Path.Combine(Settings.PRODUCTS_PATH, model.Image));
+                imageService.DeleteImage(Path.Combine(Settings.ProductsImagesPath, model.Image));
             }
 
             if(model.Id == null)

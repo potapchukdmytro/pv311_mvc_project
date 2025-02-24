@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using pv311_mvc_project.Models;
 using pv311_mvc_project.Repositories.Categories;
 using pv311_mvc_project.Repositories.Products;
+using pv311_mvc_project.Services.Cart;
 using pv311_mvc_project.ViewModels;
 
 namespace pv311_mvc_project.Controllers
@@ -13,12 +14,14 @@ namespace pv311_mvc_project.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly IProductRepository _productRepository;
         private readonly ICategoryRepository _categoryRepository;
+        private readonly ICartService _cartService;
 
-        public HomeController(ILogger<HomeController> logger, IProductRepository productRepository, ICategoryRepository categoryRepository)
+        public HomeController(ILogger<HomeController> logger, IProductRepository productRepository, ICategoryRepository categoryRepository, ICartService cartService)
         {
             _logger = logger;
             _productRepository = productRepository;
             _categoryRepository = categoryRepository;
+            _cartService = cartService;
         }
 
         public IActionResult Index(string? category = "", int page = 1)
@@ -31,12 +34,13 @@ namespace pv311_mvc_project.Controllers
 
             int pagesCount = (int)Math.Ceiling(products.Count() / (double)pageSize);
             page = page <= 0 || page > pagesCount ? 1 : page;
-
             products = products.Skip((page - 1) * pageSize).Take(pageSize);
+
+            var cartItems = _cartService.GetItems().Select(i => i.ProductId);
 
             var viewModel = new HomeProductsListVM
             {
-                Products = products,
+                Products = products.Select(p => new HomeProductItemVM { Product = p, InCart = cartItems.Contains(p.Id) }),
                 Categories = _categoryRepository.GetAll(),
                 Page = page,
                 PagesCount = pagesCount,

@@ -4,7 +4,7 @@ namespace pv311_mvc_project.ViewModels
 {
     public class HomeProductsListVM
     {
-        public IEnumerable<Product> Products { get; set; } = [];
+        public IEnumerable<HomeProductItemVM> Products { get; set; } = [];
         public IEnumerable<Category> Categories { get; set; } = [];
         public int Page { get; set; } = 1;
         public int PagesCount { get; set; }
