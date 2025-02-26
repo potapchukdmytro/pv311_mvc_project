@@ -10,6 +10,7 @@ namespace pv311_mvc_project.Models
         [MaxLength]
         public string? Description { get; set; }
         [Range(0, double.MaxValue)]
+        [Column(TypeName = "money")]
         public decimal Price { get; set; }
         [Range(0, int.MaxValue)]
         public int Amount { get; set; }

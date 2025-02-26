@@ -1,6 +1,8 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using pv311_mvc_project.Data;
 using pv311_mvc_project.Data.Initializer;
+using pv311_mvc_project.Models.Identity;
 using pv311_mvc_project.Repositories.Categories;
 using pv311_mvc_project.Repositories.Products;
 using pv311_mvc_project.Services.Cart;
@@ -25,6 +27,24 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer("name=SqlServerLocal");
 });
 
+// Add identity
+builder.Services
+    .AddIdentity<AppUser, IdentityRole>(options =>
+    {
+        options.Password.RequiredUniqueChars = 0;
+        options.Password.RequireNonAlphanumeric = false;
+        options.Password.RequiredLength = 6;
+        options.Password.RequireDigit = false;
+        options.Password.RequireUppercase = false;
+
+        options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+        options.Lockout.AllowedForNewUsers = true;
+        options.Lockout.MaxFailedAccessAttempts = 5;
+    })
+    .AddEntityFrameworkStores<AppDbContext>()
+    .AddDefaultTokenProviders()
+    .AddDefaultUI();
+
 // Add session
 builder.Services.AddSession(options =>
 {
@@ -48,9 +68,12 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseSession();
+
+app.MapRazorPages();
 
 app.MapControllerRoute(
     name: "default",
