@@ -38,8 +38,8 @@ namespace pv311_mvc_project.Controllers
             int pageSize = 12;
 
             var products = string.IsNullOrEmpty(category)
-                    ? _productRepository.Products
-                    : _productRepository.GetByCategory(category).Include(p => p.Category);
+                    ? _productRepository.Products.OrderByDescending(p => p.Amount).AsEnumerable()
+                    : _productRepository.GetByCategory(category).Include(p => p.Category).OrderByDescending(p => p.Amount).AsEnumerable();
 
             int pagesCount = (int)Math.Ceiling(products.Count() / (double)pageSize);
             page = page <= 0 || page > pagesCount ? 1 : page;

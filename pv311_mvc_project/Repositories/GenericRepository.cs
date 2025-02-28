@@ -48,9 +48,12 @@ namespace pv311_mvc_project.Repositories
             return _context.Set<TModel>();
         }
 
-        public async Task<bool> UpdateAsync(TModel model)
+        public async Task<bool> UpdateAsync(params TModel[] models)
         {
-            _context.Set<TModel>().Update(model);
+            foreach (var model in models)
+            {
+                _context.Set<TModel>().Update(model);
+            }
             var result = await _context.SaveChangesAsync();
             return result > 0;
         }

@@ -26,3 +26,17 @@ function addToCart(productId) {
 function removeFromCart(productId) {
     postRequest("/Cart/RemoveFromCart", JSON.stringify({ productId: productId }));
 }
+
+function increaseQuantity(productId, quantity) {
+    postRequest("/Cart/IncreaseQuantity", JSON.stringify({ productId: productId, quantity: quantity }));
+}
+
+function decreaseQuantity(productId, quantity) {
+    postRequest("/Cart/DecreaseQuantity", JSON.stringify({ productId: productId, quantity: quantity }));
+}
+
+function activatePromoCode(code) {
+    console.log(code);
+
+    postRequest("/Cart/ActivatePromoCode", JSON.stringify(code));
+}

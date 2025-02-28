@@ -16,7 +16,7 @@
         <div class="row">
             @foreach (var item in Model.Products)
             {
-                <div id="@item.Product.Id" class="col-md-12 col-lg-3 mb-4 mb-lg-2 product-home-card">
+                <div id="@item.Product.Id" class="col-md-12 col-lg-3 mb-4 mb-lg-2 product-home-card" style="@(item.Product.Amount > 0 ? "" : "opacity: .5")">
                     <div class="card h-100 shadow pt-4">
                         <a class="text-decoration-none" asp-action="Details" asp-route-id="@item.Product.Id">
                             <div class="text-center">
@@ -39,20 +39,30 @@
                             </div>
 
                             <div class="d-flex justify-content-between mb-2">
-                                <p class="text-muted mb-0">В наявності: <span class="fw-bold">@item.Product.Amount</span></p>
-                            </div>
-                            <div class="text-start">
-                                @if(item.InCart)
+                                @if(item.Product.Amount > 0)
                                 {
-                                    <button onclick="removeFromCart('@item.Product.Id')" class="btn btn-danger">
-                                        <i class="bi bi-cart-dash-fill"></i>
-                                    </button>
+                                    <p class="text-muted mb-0">В наявності: <span class="fw-bold">@item.Product.Amount</span></p>
                                 }
                                 else
                                 {
-                                    <button onclick="addToCart('@item.Product.Id')" class="btn btn-warning">
-                                        <i class="bi bi-cart-plus-fill"></i>
-                                    </button>
+                                    <p class="text-muted mb-0">Немає в наявності</p>
+                                }
+                            </div>
+                            <div class="text-start">
+                                @if(item.Product.Amount > 0)
+                                {
+                                    @if (item.InCart)
+                                    {
+                                        <button onclick="removeFromCart('@item.Product.Id')" class="btn btn-danger">
+                                            <i class="bi bi-cart-dash-fill"></i>
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <button onclick="addToCart('@item.Product.Id')" class="btn btn-warning">
+                                            <i class="bi bi-cart-plus-fill"></i>
+                                        </button>
+                                    }
                                 }
                             </div>
                         </div>

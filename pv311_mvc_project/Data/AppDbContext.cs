@@ -10,5 +10,6 @@ namespace pv311_mvc_project.Data
     {
         public DbSet<Product> Products { get; set; }
         public DbSet<Category> Categories { get; set; }
+        public DbSet<PromoCode> PromoCodes { get; set; }
     }
 }
